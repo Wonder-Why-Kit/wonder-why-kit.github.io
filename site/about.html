@@ -162,79 +162,9 @@
             contribute.
           </p>
           <p>Teachers, parents and anyone who shares the idea are welcome.</p>
-          <details class="volunteer-panel">
-            <summary class="button">
-              I’d like to volunteer <span aria-hidden="true">+</span>
-            </summary>
-            <form id="volunteer-form" aria-describedby="volunteer-status">
-              <p id="volunteer-status" class="form-notice">
-                Volunteer applications are opening soon. This form is a preview:
-                your details cannot be sent yet and are not saved.
-              </p>
-              <label for="volunteer-name">Name</label
-              ><input
-                id="volunteer-name"
-                name="name"
-                autocomplete="name"
-                required
-                maxlength="120"
-              />
-              <label for="volunteer-email">Email</label
-              ><input
-                id="volunteer-email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-                maxlength="254"
-              />
-              <label for="volunteer-location"
-                >Location <span>(town or city, country)</span></label
-              ><input
-                id="volunteer-location"
-                name="location"
-                autocomplete="address-level2"
-                required
-                maxlength="160"
-              />
-              <fieldset>
-                <legend>
-                  Are you a teacher or parent?
-                  <span>Select all that apply.</span>
-                </legend>
-                <label class="check"
-                  ><input type="checkbox" name="role" value="teacher" />Teacher
-                  / educator</label
-                ><label class="check"
-                  ><input type="checkbox" name="role" value="parent" />Parent /
-                  carer</label
-                ><label class="check"
-                  ><input type="checkbox" name="role" value="other" />Neither —
-                  I’d still love to help</label
-                >
-              </fieldset>
-              <label for="volunteer-help"
-                >What would you like to help with?</label
-              ><textarea
-                id="volunteer-help"
-                name="help"
-                rows="5"
-                maxlength="2000"
-                required
-                placeholder="Tell us a little about your interests, skills or ideas."
-              ></textarea>
-              <p class="form-caption">
-                Please share your own details, without children’s personal
-                information.
-                <a href="./privacy.html#volunteering"
-                  >About this form and your privacy</a
-                >
-              </p>
-              <button class="button" type="button" disabled>
-                Applications opening soon
-              </button>
-            </form>
-          </details>
+          <a class="button" href="mailto:contact@wonderwhykit.org"
+            >I’d like to volunteer <span aria-hidden="true">↗</span></a
+          >
         </div>
       </section>
       <section id="tutors" class="about-grid section tinted">
@@ -301,6 +231,5 @@
         ><a href="./privacy.html">Accessibility & privacy</a>
       </div>
     </footer>
-    <script src="./volunteer.js" defer></script>
   </body>
 </html>

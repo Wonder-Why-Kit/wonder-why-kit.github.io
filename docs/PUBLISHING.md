@@ -47,6 +47,6 @@ For each video:
 
 Avoid autoplay embeds by default. Ordinary links keep the activity focused and avoid loading a third-party player before the learner chooses to watch.
 
-## Volunteer applications
+## Volunteer enquiries
 
-The About page currently contains a non-submitting preview form. Connect a chosen submission service before enabling it; do not put service secrets in client-side code. Update privacy copy, add appropriate consent and retention details for the selected service, and verify successful delivery and failure feedback before removing the preview notice. `site/volunteer.js` currently prevents all submissions.
+The About page opens the visitor’s email app using `mailto:contact@wonderwhykit.org`. No web form or submission backend is used. Mailbox availability must be managed separately from GitHub Pages hosting.

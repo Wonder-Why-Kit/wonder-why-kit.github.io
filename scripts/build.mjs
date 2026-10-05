@@ -50,7 +50,6 @@ for (const world of worlds) {
 }
 for (const file of [
   "about.html",
-  "volunteer.js",
   "tutors.html",
   "privacy.html",
   "site.css",
