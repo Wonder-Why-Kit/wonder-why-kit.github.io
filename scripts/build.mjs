@@ -21,6 +21,7 @@ for (const world of worlds) {
     "styles.css",
     "src/game.js",
     "src/simulation.js",
+    "src/audio.js",
   ]) {
     const output = path.join("dist", world.slug, file);
     await mkdir(path.dirname(output), { recursive: true });

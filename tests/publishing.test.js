@@ -13,7 +13,7 @@ test("static build contains only approved files and relative activity references
     );
   }
   const output = files("dist");
-  assert.equal(output.length, 15);
+  assert.equal(output.length, 16);
   assert.ok(
     output.every(
       (file) =>

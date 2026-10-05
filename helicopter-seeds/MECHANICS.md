@@ -46,7 +46,7 @@ Keep terrain rendering, landing checks and sprout placement tied to the same `gr
 
 ## Rounds
 
-Ten seeds per round. The first automatic release is after 0.5 seconds, then every 4 seconds manually or 6 seconds in autoplay. Drop buttons release sooner and consume the same allowance; Drop pair delays the next scheduled release by 6 seconds. Autoplay disables manual breeze, wing, weight and drop controls.
+Ten seeds per round. Manual play releases seeds only when the tree or nearby drop buttons are activated. Autoplay starts with a 0.5-second delay, then releases every 6 seconds. Drop buttons consume the same allowance; Drop pair delays the next scheduled release by 6 seconds. Autoplay disables manual breeze, wing, weight and drop controls.
 
 The round ends only when no seeds remain to release, fly or be collected. Restart clears seeds/sprouts, resets character movement state and wind, but retains chosen control settings. Round meshes are removed from the scene; resource disposal is not yet comprehensive, so monitor GPU memory during extended restart testing.
 
@@ -76,3 +76,7 @@ Light-blue wind ribbons follow actual wind. Clouds drift left-to-right faster wi
 2. Preserve pair comparability, seed accounting (`left + flying + landed + planted + eaten = 10` during a round), exclusive collection and terrain alignment.
 3. Update this reference and tutor notes when the model's meaning changes.
 4. Run `npm run format`, `npm run check`, `npm run build` from the repository root. Play-test zero/strong breeze, manual pairs, autoplay, restarts, hill landings and chicken collection. The automated tests do not validate rendered behaviour.
+
+## Local interaction revision
+
+Tree clicks use raycasting; nearby HTML drop buttons provide keyboard access. Both start a round on first use. Manual play waits for input. Short live-region cues replace the running commentary: start, pair comparison, first meadow landing and round result. Event cues appear at most once per round and expire after 6.5 real seconds; the result remains visible.

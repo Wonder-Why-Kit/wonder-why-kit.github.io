@@ -1,7 +1,23 @@
+import { createGardenAudio } from "./audio.js";
 import { groundHeight, fallSpeed } from "./simulation.js";
 
+const gardenAudio = createGardenAudio(document.querySelector("#sound"));
 const status = document.querySelector("#status");
 function refreshSteppers() {
+  const breeze = document.getElementById("breeze");
+  document.querySelectorAll("[data-wind]").forEach((button) => {
+    button.disabled = breeze.disabled;
+    button.setAttribute(
+      "aria-pressed",
+      String(Math.abs(+button.dataset.wind - +breeze.value) < 0.01),
+    );
+  });
+  const slow = document.querySelector("#slow");
+  slow.setAttribute(
+    "aria-pressed",
+    String(+document.querySelector("#speed").value < 1),
+  );
+
   for (const id of ["breeze", "wing", "weight", "speed"]) {
     const input = document.getElementById(id),
       value = Number(input.value);
@@ -25,9 +41,8 @@ function refreshSteppers() {
       text +=
         " · " +
         (Math.round((value - Number(input.min)) / Number(input.step)) + 1);
-    document.getElementById(id + "State").textContent = input.disabled
-      ? "Auto"
-      : text;
+    const output = document.getElementById(id + "State");
+    if (output) output.textContent = input.disabled ? "Auto" : text;
     document
       .querySelectorAll('[data-control="' + id + '"]')
       .forEach(
@@ -59,6 +74,35 @@ for (const button of document.querySelectorAll("[data-control]"))
     input.dispatchEvent(new Event("input", { bubbles: true }));
     refreshSteppers();
   });
+document.querySelectorAll("[data-wind]").forEach((button) =>
+  button.addEventListener("click", () => {
+    const input = document.querySelector("#breeze");
+    if (input.disabled) return;
+    input.value = button.dataset.wind;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    refreshSteppers();
+  }),
+);
+document.querySelector("#slow").addEventListener("click", () => {
+  const speed = document.querySelector("#speed");
+  speed.value = +speed.value < 1 ? 1 : 0.3;
+  speed.dispatchEvent(new Event("input", { bubbles: true }));
+  refreshSteppers();
+});
+document.querySelectorAll(".scene-panel").forEach((panel) =>
+  panel.addEventListener("toggle", () => {
+    if (panel.open)
+      document.querySelectorAll(".scene-panel").forEach((other) => {
+        if (other !== panel) other.open = false;
+      });
+  }),
+);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape")
+    document
+      .querySelectorAll(".scene-panel")
+      .forEach((panel) => (panel.open = false));
+});
 refreshSteppers();
 try {
   const THREE = await import(
@@ -227,16 +271,10 @@ try {
     mesh(new THREE.SphereGeometry(0.095, 12, 8), wood, x, 1.4, -1);
   }
   const tree = new THREE.Group();
-  tree.position.set(-4, 0, 3.1);
+  tree.position.set(-4, 0, 5.8);
+  tree.scale.y = 1.2;
   scene.add(tree);
   mesh(new THREE.CylinderGeometry(0.27, 0.52, 4.3, 16), bark, 0, 2.15, 0, tree);
-  beam(
-    new THREE.Vector3(0, 3.1, 0),
-    new THREE.Vector3(2.2, 4.8, 0.15),
-    0.14,
-    bark,
-    tree,
-  );
   beam(
     new THREE.Vector3(0, 3.4, 0),
     new THREE.Vector3(-1.5, 4.7, -0.4),
@@ -262,19 +300,6 @@ try {
     const [x, y, z, r] = clusters[i];
     const cluster = mesh(domeGeometry, canopyMaterials[i % 4], x, y, z, canopy);
     cluster.scale.set(r, r * 0.78, r * 0.9);
-  }
-  // Leaves at the exposed branch tip.
-  for (let i = 0; i < 5; i++) {
-    const leaf = mesh(
-      new THREE.SphereGeometry(0.22, 16, 12),
-      foliage[i % 4],
-      1.8 + i * 0.16,
-      4.6 + i * 0.08,
-      0.2 + (i % 2) * 0.25,
-      tree,
-    );
-    leaf.scale.set(0.55, 1.5, 0.22);
-    leaf.rotation.z = i % 2 ? 0.8 : -0.8;
   }
   // Reusable airborne leaves, released by stronger gusts.
   const looseLeaves = [];
@@ -624,8 +649,6 @@ try {
       weightControl.disabled =
       document.querySelector("#breeze").disabled =
         autoControl.checked;
-    document.querySelector("#drop").disabled =
-      autoControl.checked || (playing && left === 0);
     document.querySelector("#dropPair").disabled =
       autoControl.checked || (playing && left < 2);
     refreshSteppers();
@@ -658,18 +681,18 @@ try {
     }
   }
   function randomReleasePoint() {
-    // Sample the lower canopy and exposed branch, relative to the tree.
+    // Sample the lower canopy, relative to the tree.
     const points = [
       [-1.25, 4.3, 0.4],
       [-0.7, 4.25, 0.9],
       [0.15, 4.35, 0.9],
       [1.15, 4.55, 0.25],
-      [2.05, 4.75, 0.15],
+      [0.7, 4.5, 0.65],
     ];
     const p = points[Math.floor(Math.random() * points.length)];
     return new THREE.Vector3(
       tree.position.x + p[0] + (Math.random() - 0.5) * 0.3,
-      p[1] + (Math.random() - 0.5) * 0.18,
+      tree.position.y + (p[1] + (Math.random() - 0.5) * 0.18) * tree.scale.y,
       tree.position.z + p[2] + (Math.random() - 0.5) * 0.3,
     );
   }
@@ -723,7 +746,8 @@ try {
     seed.visible = false;
     scores();
     syncControls();
-    status.textContent = "Help seeds find room to grow beyond the fence.";
+    shownCues.clear();
+    cue("start", "Tap the tree to drop a seed.");
   }
 
   const wingControl = document.querySelector("#wing"),
@@ -739,17 +763,40 @@ try {
   }
   function resetSeed() {
     seedDesign();
-    seed.position.set(-1.8, 4.8, 3.25);
+    seed.position.set(
+      tree.position.x + 1.15,
+      4.55 * tree.scale.y,
+      tree.position.z + 0.25,
+    );
     rotor.rotation.set(0.18, 0, 0.1);
     flight = null;
   }
   wingControl.oninput = weightControl.oninput = () => {
     if (!flight) seedDesign();
   };
-  document.querySelector("#drop").onclick = () => {
+  const shownCues = new Set();
+  let cueTimeout;
+  function cue(key, text, persistent = false) {
+    if (shownCues.has(key)) return;
+    shownCues.add(key);
+    clearTimeout(cueTimeout);
+    status.textContent = text;
+    status.parentElement.hidden = false;
+    if (!persistent)
+      cueTimeout = setTimeout(() => {
+        status.parentElement.hidden = true;
+      }, 6500);
+  }
+  document.querySelector("#dropPair .button-label").textContent =
+    "Drop pair of seeds";
+  document
+    .querySelector("#dropPair")
+    .setAttribute("aria-label", "Drop pair of seeds: one light and one heavy");
+  function dropSeed() {
+    if (autoControl.checked) return;
     if (!playing) startRound();
     release(+wingControl.value, +weightControl.value);
-  };
+  }
   document.querySelector("#dropPair").onclick = () => {
     if (autoControl.checked) return;
     if (!playing) startRound();
@@ -759,8 +806,7 @@ try {
     release(size, 0.1, -0.2, origin);
     release(size, 0.9, 0.2, origin);
     dropTimer = 6;
-    status.textContent =
-      "Same wing, same height: one light seed and one heavy seed. Which stays up longer?";
+    cue("pair", "Light + heavy. Which stays up longer?");
   };
   document.querySelector("#round").onclick = startRound;
   autoControl.checked = false;
@@ -769,12 +815,31 @@ try {
     autoControl.setAttribute("aria-pressed", String(autoControl.checked));
     autoControl.querySelector(".button-label").textContent =
       "Autoplay: " + (autoControl.checked ? "on" : "off");
+    if (autoControl.checked && !playing) startRound();
     syncControls();
     windTimer = 0;
   };
   resetSeed();
   let previousTime = null;
 
+  const treeActions = document.querySelector(".tree-actions");
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  canvas.addEventListener("click", (event) => {
+    const bounds = canvas.getBoundingClientRect();
+    pointer.set(
+      ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+      (-(event.clientY - bounds.top) / bounds.height) * 2 + 1,
+    );
+    raycaster.setFromCamera(pointer, camera);
+    if (raycaster.intersectObject(tree, true).length) dropSeed();
+  });
+  canvas.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      dropSeed();
+    }
+  });
   function resize() {
     const w = canvas.clientWidth,
       h = canvas.clientHeight,
@@ -791,6 +856,13 @@ try {
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
     renderer.setSize(w, h, false);
+    const anchor = new THREE.Vector3(
+      tree.position.x - 1.8,
+      4.8 * tree.scale.y,
+      tree.position.z,
+    ).project(camera);
+    treeActions.style.left = `${Math.max(10, Math.min(w - 200, ((anchor.x + 1) * w) / 2 - 190))}px`;
+    treeActions.style.top = `${Math.max(80, Math.min(h - 230, ((1 - anchor.y) * h) / 2))}px`;
     // Place distant objects within the intended sky composition, in world coordinates.
     function skyPosition(nx, ny, depth = -24) {
       const point = new THREE.Vector3(nx, ny, 0).unproject(camera);
@@ -811,6 +883,7 @@ try {
   }
   new ResizeObserver(resize).observe(canvas);
   resize();
+  let lastAudioUpdate = 0;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   renderer.setAnimationLoop((ms) => {
     const t = ms / 1000;
@@ -835,7 +908,7 @@ try {
       windX += (targetX - windX) * Math.min(1, dt * 3);
       windZ += (targetZ - windZ) * Math.min(1, dt * 3);
       dropTimer -= dt;
-      if (dropTimer <= 0 && left > 0) {
+      if (autoControl.checked && dropTimer <= 0 && left > 0) {
         if (autoControl.checked) {
           const size = 0.65 + Math.random() * 0.9,
             weight = 0.2 + Math.random() * 0.4,
@@ -880,7 +953,7 @@ try {
           planted++;
           plant(f.mesh.position.x, f.mesh.position.z);
           scene.remove(f.mesh);
-          status.textContent = "A seed found sunlight and room in the meadow!";
+          cue("meadow", "Room to grow! 🌱");
         } else {
           f.rotor.rotation.x = 0.08;
           landed.push(f);
@@ -909,6 +982,7 @@ try {
       if (collector && !f.pecker) {
         f.pecker = collector;
         f.peckTime = 0.85;
+        gardenAudio.cluck();
         collector.mode = "peck";
         collector.timer = 0.85;
         collector.vx = collector.vz = 0;
@@ -920,8 +994,6 @@ try {
           f.collected = true;
           eaten++;
           scores();
-          status.textContent =
-            f.pecker.name + " pecked up a seed in the garden.";
         }
       }
     }
@@ -929,7 +1001,11 @@ try {
     if (playing && left === 0 && flights.length === 0 && landed.length === 0) {
       playing = false;
       syncControls();
-      status.textContent = `${planted} seeds reached growing space. Restart with different breeze, wing size and seed weight conditions`;
+      cue(
+        "end",
+        `${planted} seeds found room. Change the breeze and try again!`,
+        true,
+      );
     }
     // Movement and comedy run on the same slowed clock as the seed.
     for (let i = 0; i < chickens.length; i++) {
@@ -1053,7 +1129,6 @@ try {
         h.vx = h.vz = 0;
         // Put Dot just outside the trunk before her dazed recovery.
         h.group.position.x = -3.4;
-        status.textContent = "Dot: “Who put that tree there?”";
       } else if (dashing && h.timer <= 0) {
         h.mode = "idle";
       }
@@ -1074,6 +1149,14 @@ try {
       peck.group.position.z -= separation.y;
     }
     const windStrength = Math.hypot(windX, windZ);
+    if (ms - lastAudioUpdate > 250) {
+      gardenAudio.wind(
+        autoControl.checked
+          ? windStrength
+          : +document.querySelector("#breeze").value,
+      );
+      lastAudioUpdate = ms;
+    }
     for (const cloud of clouds) {
       cloud.position.x += dt * (0.08 + windStrength * 1.35);
       const edge = camera.right + 2;
@@ -1137,7 +1220,7 @@ try {
     canopy.rotation.x = reduced ? 0 : Math.cos(t * 1.1) * k * 0.012;
     renderer.render(scene, camera);
   });
-  status.textContent = "Garden in front · sunny meadow beyond the fence";
+  cue("welcome", "Tap the tree to drop a seed.", true);
 } catch (error) {
   status.textContent =
     "The 3D garden could not load. Check your connection and WebGL support, then refresh.";

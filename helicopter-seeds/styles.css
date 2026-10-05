@@ -184,8 +184,8 @@ body {
   min-height: 660px;
   display: grid;
   grid-template-columns: 244px minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr);
-  grid-template-areas: "header header" "controls game";
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas: "header header" "controls prompt" "controls game";
   gap: 14px;
   padding: 20px;
 }
@@ -294,8 +294,8 @@ body {
     min-height: 0;
     padding: 12px;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 62vh auto;
-    grid-template-areas: "header" "game" "controls";
+    grid-template-rows: auto auto 62vh auto;
+    grid-template-areas: "header" "prompt" "game" "controls";
   }
   .garden-view footer {
     bottom: 8px;
@@ -336,17 +336,10 @@ body {
   margin: auto;
 }
 .discovery-prompt {
-  position: absolute;
-  top: 16px;
-  left: 20px;
-  right: 100px;
-  z-index: 2;
-  pointer-events: none;
-  max-width: 640px;
-  padding: 12px 16px;
-  border-radius: 16px;
-  background: rgba(255, 252, 243, 0.88);
-  box-shadow: 0 3px 16px #30452f0a;
+  grid-area: prompt;
+  position: static;
+  min-width: 0;
+  padding: 4px 2px;
 }
 .discovery-prompt h2 {
   margin: 0;
@@ -370,4 +363,255 @@ body {
   .discovery-prompt p {
     font-size: 12px;
   }
+}
+.tree-actions {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  gap: 6px;
+  transform: translate(-50%, 8px);
+  padding: 5px;
+  background: #fffaf0ed;
+  border-radius: 18px;
+  box-shadow: 0 4px 15px #304f4025;
+}
+.tree-actions button {
+  font-size: 12px;
+  padding: 9px 10px;
+  min-height: 44px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.tree-actions svg {
+  width: 20px;
+  height: 20px;
+}
+.garden-view footer.garden-cue {
+  bottom: auto;
+  top: 26%;
+  left: 51%;
+  right: 12px;
+  min-height: 0;
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 300px;
+  font-weight: 700;
+}
+.garden-cue[hidden] {
+  display: none !important;
+}
+#garden {
+  cursor: pointer;
+}
+@media (max-width: 650px) {
+  .garden-view footer.garden-cue {
+    top: auto;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+  }
+  .tree-actions button {
+    padding: 8px;
+    font-size: 11px;
+  }
+}
+
+#sound {
+  margin: 12px 0;
+  width: 100%;
+}
+#sound[aria-pressed="true"] {
+  background: #f8dfa1;
+  color: #304f40;
+}
+.tree-actions {
+  transform: translate(-50%, -100%);
+}
+/* Scene-first controls: the garden owns the full available width. */
+.play-layout {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas: "header" "prompt" "game";
+  min-height: 760px;
+}
+.wind-choices {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  background: #fffaf0ed;
+  padding: 6px 10px;
+  border-radius: 20px;
+  z-index: 3;
+}
+.wind-choices button,
+.scene-toolbar button {
+  min-height: 44px;
+  padding: 9px 13px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.wind-choices button {
+  background: #eef1e6;
+  color: #355d45;
+}
+.wind-choices button[aria-pressed="true"],
+#slow[aria-pressed="true"] {
+  background: #f8dfa1;
+  color: #304f40;
+}
+.scene-panel {
+  z-index: 5;
+}
+.scene-panel summary {
+  cursor: pointer;
+  background: #fffaf0f5;
+  color: #304f40;
+  min-height: 44px;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  list-style: none;
+  box-shadow: 0 3px 12px #304f4020;
+}
+.scene-panel summary::-webkit-details-marker {
+  display: none;
+}
+.scene-panel summary:focus-visible {
+  outline: 3px solid #286a90;
+  outline-offset: 3px;
+}
+.seed-panel {
+  position: absolute;
+  transform: translateX(-50%);
+}
+.panel-content {
+  width: 245px;
+  max-width: calc(100vw - 60px);
+  padding: 14px;
+  background: #fffaf0;
+  border-radius: 18px;
+  box-shadow: 0 5px 22px #304f4030;
+  margin-top: 6px;
+  max-height: 260px;
+  overflow: auto;
+}
+.panel-content .setting {
+  margin-bottom: 14px;
+}
+.panel-hint {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  color: #53664c;
+}
+.scene-toolbar {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  left: 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  z-index: 4;
+}
+.scene-toolbar #sound {
+  width: auto;
+  margin: 0;
+}
+.scene-toolbar svg {
+  width: 17px;
+  height: 17px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+.more-panel {
+  position: relative;
+}
+.more-panel .panel-content {
+  position: absolute;
+  bottom: 54px;
+  right: 0;
+}
+.garden-view #score {
+  position: absolute;
+  left: 16px;
+  bottom: 70px;
+  background: #fffaf0df;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.garden-view footer.garden-cue {
+  top: 31%;
+}
+@media (max-width: 650px) {
+  .play-layout {
+    height: auto;
+    min-height: 0;
+    grid-template-rows: auto auto minmax(600px, 78vh);
+    grid-template-areas: "header" "prompt" "game";
+  }
+  .wind-choices {
+    top: 10px;
+    right: 10px;
+  }
+  .scene-toolbar {
+    justify-content: center;
+    gap: 5px;
+  }
+  .scene-toolbar button {
+    padding: 8px;
+    font-size: 12px;
+  }
+  .garden-view #score {
+    bottom: 120px;
+  }
+  .garden-view footer.garden-cue {
+    top: auto;
+    bottom: 155px;
+  }
+  .panel-content {
+    width: 215px;
+  }
+  .seed-panel {
+    max-width: 230px;
+  }
+}
+
+.tree-actions {
+  flex-direction: column;
+  align-items: stretch;
+  width: 190px;
+  transform: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  gap: 8px;
+}
+.tree-actions .seed-panel {
+  position: relative;
+  transform: none;
+  max-width: none;
+}
+.tree-actions .panel-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 6;
+}
+.tree-actions summary {
+  text-align: center;
+}
+#garden:focus-visible {
+  outline: 3px solid #286a90;
+  outline-offset: -4px;
 }
