@@ -45,7 +45,7 @@ for (const world of worlds) {
     );
   }
   cards.push(
-    `<article class="world-card"><div class="garden-art" aria-hidden="true"><span class="sun"></span><span class="cloud"></span><span class="hill"></span><span class="tree"></span><span class="seed"></span><span class="chicken"></span><span class="chicken dot"></span></div><div class="world-copy"><p class="eyebrow">A little world · Ages ${escape(world.ages)}</p><h3>${escape(world.title)}</h3><p>${world.slug === "helicopter-seeds" ? "A spinning seed. A cheeky chicken. Where will the breeze take you?" : escape(world.description)}</p><a class="button" href="./${world.slug}/index.html">${world.slug === "helicopter-seeds" ? "Play with the breeze" : "Let’s play"} <span aria-hidden="true">↗</span></a></div></article>`,
+    `<article class="world-card"><div class="garden-art"><img src="./assets/helicopter-garden.png" alt="Peck and Dot watching a winged seed float over the garden fence" width="1536" height="1024" loading="lazy"></div><div class="world-copy"><p class="eyebrow">A little world · Ages ${escape(world.ages)}</p><h3>${escape(world.title)}</h3><p>${world.slug === "helicopter-seeds" ? "A spinning seed. A cheeky chicken. Where will the breeze take you?" : escape(world.description)}</p><a class="button" href="./${world.slug}/index.html">${world.slug === "helicopter-seeds" ? "Play with the breeze" : "Let’s play"} <span aria-hidden="true">↗</span></a></div></article>`,
   );
 }
 for (const file of [
@@ -54,6 +54,7 @@ for (const file of [
   "privacy.html",
   "site.css",
   "assets/open-kit.png",
+  "assets/helicopter-garden.png",
   "assets/logo.svg",
   "assets/logo-mono.svg",
   "assets/favicon.svg",
