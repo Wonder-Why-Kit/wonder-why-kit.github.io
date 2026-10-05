@@ -258,17 +258,42 @@ try {
     scene.add(ribbon);
     windRibbons.push(ribbon);
   }
-  // Rounded fence rails, extending behind the tree across the full world.
-  for (const y of [0.45, 0.95])
-    beam(
-      new THREE.Vector3(-15, y, -1),
-      new THREE.Vector3(15, y, -1),
-      0.075,
+  // Extend the fence to the camera width; share geometry and reuse posts on resize.
+  const fenceRails = [0.45, 0.95].map((y) => {
+    const rail = mesh(
+      new THREE.CylinderGeometry(0.075, 0.075, 1, 10),
       wood,
+      0,
+      y,
+      -1,
     );
-  for (let x = -15; x <= 15; x += 1.5) {
-    mesh(new THREE.CylinderGeometry(0.09, 0.11, 1.4, 10), wood, x, 0.7, -1);
-    mesh(new THREE.SphereGeometry(0.095, 12, 8), wood, x, 1.4, -1);
+    rail.rotation.z = Math.PI / 2;
+    return rail;
+  });
+  const postGeometry = new THREE.CylinderGeometry(0.09, 0.11, 1.4, 10);
+  const capGeometry = new THREE.SphereGeometry(0.095, 12, 8);
+  const fencePosts = [];
+  function fitFence(halfWidth) {
+    const steps = Math.ceil((halfWidth + 3) / 1.5);
+    const extent = steps * 1.5;
+    fenceRails.forEach((rail) => {
+      rail.scale.y = extent * 2;
+    });
+    for (let i = 0; i <= steps * 2; i++) {
+      if (!fencePosts[i])
+        fencePosts.push([
+          mesh(postGeometry, wood, 0, 0.7, -1),
+          mesh(capGeometry, wood, 0, 1.4, -1),
+        ]);
+      fencePosts[i].forEach((part) => {
+        part.position.x = -extent + i * 1.5;
+        part.visible = true;
+      });
+    }
+    for (let i = steps * 2 + 1; i < fencePosts.length; i++)
+      fencePosts[i].forEach((part) => {
+        part.visible = false;
+      });
   }
   const tree = new THREE.Group();
   tree.position.set(-4, 0, 5.8);
@@ -847,6 +872,7 @@ try {
       span = Math.max(13, 19 / aspect);
     camera.left = (-span * aspect) / 2;
     camera.right = (span * aspect) / 2;
+    fitFence(camera.right);
     camera.top = span / 2;
     camera.bottom = -span / 2;
     camera.near = 0.1;
