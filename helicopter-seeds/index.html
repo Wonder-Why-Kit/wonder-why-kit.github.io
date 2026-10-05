@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Helicopter Seeds · Wonder Why Kit</title>
+    <meta
+      name="description"
+      content="Play with breeze, wing size and seed weight in a 3D garden. Discover why maple seeds spin and how they find room to grow."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <noscript
+      >This game needs JavaScript. You can still read the explanations
+      below.</noscript
+    >
+    <div class="play-layout">
+      <header>
+        <h1>Helicopter Seeds</h1>
+        <p>A little world to play with · Wonder Why Kit</p>
+      </header>
+      <aside aria-label="Game controls">
+        <div class="actions">
+          <button id="round">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path d="M11 6 26 16 11 26Z" fill="currentColor" /></svg
+            ><span class="button-label">Start round</span></button
+          ><button id="drop">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path
+                d="M16 3v15m-5-5 5 5 5-5M7 26h18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <ellipse cx="16" cy="23" rx="4" ry="2" fill="currentColor" /></svg
+            ><span class="button-label">Drop a seed</span></button
+          ><button id="dropPair">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path
+                d="M9 3v12m-4-4 4 4 4-4M23 3v12m-4-4 4 4 4-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <ellipse cx="9" cy="24" rx="3" ry="4" fill="currentColor" />
+              <ellipse cx="23" cy="24" rx="5" ry="6" fill="currentColor" /></svg
+            ><span class="button-label"
+              >Drop pair – Light and heavy</span
+            ></button
+          ><button id="auto" aria-pressed="false">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path
+                d="M26 12a11 11 0 0 0-19-4L4 11m0-6v6h6m-4 9a11 11 0 0 0 19 4l3-3m0 6v-6h-6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="m13 11 8 5-8 5Z" fill="currentColor" /></svg
+            ><span class="button-label">Autoplay: off</span>
+          </button>
+        </div>
+        <section class="setting" aria-label="Breeze">
+          <h2>Breeze</h2>
+          <div class="stepper">
+            <button
+              data-control="breeze"
+              data-direction="-1"
+              aria-label="Decrease breeze"
+            >
+              ◌</button
+            ><output id="breezeState" aria-live="polite"></output
+            ><button
+              data-control="breeze"
+              data-direction="1"
+              aria-label="Increase breeze"
+            >
+              ≋
+            </button>
+          </div>
+          <input
+            hidden
+            id="breeze"
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value="0.7"
+          />
+        </section>
+        <section class="setting" aria-label="Wing size">
+          <h2>Wing size</h2>
+          <div class="stepper">
+            <button
+              data-control="wing"
+              data-direction="-1"
+              aria-label="Decrease wing size"
+            >
+              <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <g transform="translate(5.92 5.92) scale(0.63)">
+                  <path
+                    d="M5 25C7 12 19 3 28 5 29 16 16 25 5 25Z"
+                    fill="#d9b77b"
+                    stroke="#83653d"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M6 24 25 8M12 18l1-7m4 3 7-1"
+                    fill="none"
+                    stroke="#967545"
+                    stroke-width="1.3"
+                  />
+                  <ellipse cx="5" cy="26" rx="3" ry="3" fill="#8c633d" />
+                </g>
+              </svg></button
+            ><output id="wingState" aria-live="polite"></output
+            ><button
+              data-control="wing"
+              data-direction="1"
+              aria-label="Increase wing size"
+            >
+              <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <g transform="translate(0 0) scale(1)">
+                  <path
+                    d="M5 25C7 12 19 3 28 5 29 16 16 25 5 25Z"
+                    fill="#d9b77b"
+                    stroke="#83653d"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M6 24 25 8M12 18l1-7m4 3 7-1"
+                    fill="none"
+                    stroke="#967545"
+                    stroke-width="1.3"
+                  />
+                  <ellipse cx="5" cy="26" rx="3" ry="3" fill="#8c633d" />
+                </g>
+              </svg>
+            </button>
+          </div>
+          <input
+            hidden
+            id="wing"
+            type="range"
+            min="0.5"
+            max="1.8"
+            step="0.1"
+            value="1"
+          />
+        </section>
+        <section class="setting" aria-label="Seed weight">
+          <h2>Seed weight</h2>
+          <div class="stepper">
+            <button
+              data-control="weight"
+              data-direction="-1"
+              aria-label="Decrease seed weight"
+            >
+              <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <ellipse
+                  cx="16"
+                  cy="17"
+                  rx="5"
+                  ry="5.75"
+                  transform="rotate(25 16 17)"
+                  fill="#aa7d4b"
+                  stroke="#705035"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M14.25 13.75q-2.0 2.25 0 4.0"
+                  stroke="#e6c79b"
+                  stroke-width="2"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+              </svg></button
+            ><output id="weightState" aria-live="polite"></output
+            ><button
+              data-control="weight"
+              data-direction="1"
+              aria-label="Increase seed weight"
+            >
+              <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <ellipse
+                  cx="16"
+                  cy="17"
+                  rx="10"
+                  ry="11.5"
+                  transform="rotate(25 16 17)"
+                  fill="#aa7d4b"
+                  stroke="#705035"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M12.5 10.5q-4.0 4.5 0 8.0"
+                  stroke="#e6c79b"
+                  stroke-width="2"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+          <input
+            hidden
+            id="weight"
+            type="range"
+            min="0.1"
+            max="1"
+            step="0.1"
+            value="0.3"
+          />
+        </section>
+        <section class="setting" aria-label="Playback speed">
+          <h2>Playback speed</h2>
+          <div class="stepper">
+            <button
+              data-control="speed"
+              data-direction="-1"
+              aria-label="Decrease playback speed"
+            >
+              🐌</button
+            ><output id="speedState" aria-live="polite"></output
+            ><button
+              data-control="speed"
+              data-direction="1"
+              aria-label="Increase playback speed"
+            >
+              🐇
+            </button>
+          </div>
+          <input
+            hidden
+            id="speed"
+            type="range"
+            min="0.1"
+            max="1"
+            step="0.1"
+            value="1"
+          />
+        </section>
+        <div id="score">Meadow 0 · Chickens 0 · Left 10</div>
+      </aside>
+      <div class="garden-view">
+        <div class="discovery-prompt">
+          <h2>Why do maple seeds spin like helicopters?</h2>
+          <p>
+            Change the breeze, wing size and weight. See what helps a seed find
+            room to grow.
+          </p>
+        </div>
+        <canvas
+          id="garden"
+          aria-label="A three-dimensional grassy garden, rounded tree and wooden fence separating a sunny meadow"
+        ></canvas>
+        <footer>
+          <strong>In the garden</strong
+          ><span id="status" role="status" aria-live="polite"
+            >Loading the garden…</span
+          >
+        </footer>
+      </div>
+    </div>
+    <main class="learn">
+      <section>
+        <h2>What is going on?</h2>
+        <p class="section-intro">
+          You have been changing the seed and the breeze. Here is what those
+          changes help you notice.
+        </p>
+        <div class="explain-cards">
+          <article class="explain-card">
+            <svg
+              viewBox="0 0 360 210"
+              role="img"
+              aria-label="A heavy seed body with a thin curved wing"
+            >
+              <defs>
+                <linearGradient id="wing0" x2="0.3" y2="1">
+                  <stop stop-color="#f6db9f" />
+                  <stop offset="1" stop-color="#d9a467" />
+                </linearGradient>
+                <linearGradient id="nut0" x2="0.8" y2="1">
+                  <stop stop-color="#bd8952" />
+                  <stop offset="1" stop-color="#80522f" />
+                </linearGradient>
+              </defs>
+              <ellipse cx="182" cy="161" rx="102" ry="10" fill="#496d4515" />
+              <g transform="translate(94 120) scale(1.2)">
+                <path
+                  d="M0 0 C35 -56 111 -67 142 -33 C117 -7 48 8 0 0Z"
+                  fill="url(#wing0)"
+                  stroke="#bf915c"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M6 -2 Q68 -31 130 -34 M35 -15 l12 -24 M61 -23 l17 -24 M85 -29 l19 -21"
+                  stroke="#b08049"
+                  opacity=".5"
+                  fill="none"
+                />
+                <ellipse
+                  cx="0"
+                  cy="1"
+                  rx="17"
+                  ry="12"
+                  transform="rotate(-25)"
+                  fill="url(#nut0)"
+                />
+              </g>
+              <g fill="#486044" font-family="system-ui" font-size="14">
+                <text x="28" y="62">Heavier body</text>
+                <text x="194" y="44">Papery wing</text>
+              </g>
+              <path
+                d="M75 68 L90 103 M240 50 L230 68"
+                stroke="#778c65"
+                fill="none"
+              />
+            </svg>
+            <div class="explain-copy">
+              <h3>A heavy body and a papery wing</h3>
+              <p>
+                The seed’s weight is concentrated at one end. As it falls, air
+                pushing on the uneven shape makes it turn. Try changing the wing
+                size while keeping the weight the same.
+              </p>
+            </div>
+          </article>
+          <article class="explain-card">
+            <svg
+              viewBox="0 0 360 210"
+              role="img"
+              aria-label="A winged seed spinning and falling slowly"
+            >
+              <defs>
+                <linearGradient id="wing1" x2="0.3" y2="1">
+                  <stop stop-color="#f6db9f" />
+                  <stop offset="1" stop-color="#d9a467" />
+                </linearGradient>
+                <linearGradient id="nut1" x2="0.8" y2="1">
+                  <stop stop-color="#bd8952" />
+                  <stop offset="1" stop-color="#80522f" />
+                </linearGradient>
+              </defs>
+              <ellipse
+                cx="179"
+                cy="112"
+                rx="113"
+                ry="35"
+                fill="#e8c080"
+                opacity=".18"
+              />
+              <ellipse
+                cx="179"
+                cy="112"
+                rx="113"
+                ry="35"
+                stroke="#78a596"
+                stroke-width="3"
+                stroke-dasharray="7 7"
+                fill="none"
+              />
+              <g transform="translate(158 115) scale(0.8)">
+                <path
+                  d="M0 0 C35 -56 111 -67 142 -33 C117 -7 48 8 0 0Z"
+                  fill="url(#wing1)"
+                  stroke="#bf915c"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M6 -2 Q68 -31 130 -34 M35 -15 l12 -24 M61 -23 l17 -24 M85 -29 l19 -21"
+                  stroke="#b08049"
+                  opacity=".5"
+                  fill="none"
+                />
+                <ellipse
+                  cx="0"
+                  cy="1"
+                  rx="17"
+                  ry="12"
+                  transform="rotate(-25)"
+                  fill="url(#nut1)"
+                />
+              </g>
+              <path
+                d="M275 85 l17 15 -21 3"
+                stroke="#598777"
+                stroke-width="3"
+                fill="none"
+              />
+              <path
+                d="M178 156 v23 m-7 -7 7 8 7 -8"
+                stroke="#598777"
+                stroke-width="3"
+                fill="none"
+              />
+              <text
+                x="180"
+                y="198"
+                text-anchor="middle"
+                fill="#486044"
+                font-family="system-ui"
+                font-size="14"
+              >
+                Spinning helps slow the fall
+              </text>
+            </svg>
+            <div class="explain-copy">
+              <h3>The spinning wing slows the fall</h3>
+              <p>
+                As the wing spins through the air, it produces an upward force
+                that slows the seed’s descent. Use slow motion to watch the
+                rotation. A wingless seed would fall much faster.
+              </p>
+            </div>
+          </article>
+          <article class="explain-card">
+            <svg
+              viewBox="0 0 360 210"
+              role="img"
+              aria-label="Wind carries a seed beyond the tree into a sunny meadow"
+            >
+              <defs>
+                <linearGradient id="wing2" x2="0.3" y2="1">
+                  <stop stop-color="#f6db9f" />
+                  <stop offset="1" stop-color="#d9a467" />
+                </linearGradient>
+                <linearGradient id="nut2" x2="0.8" y2="1">
+                  <stop stop-color="#bd8952" />
+                  <stop offset="1" stop-color="#80522f" />
+                </linearGradient>
+              </defs>
+              <rect width="360" height="210" fill="#d5e9ec" />
+              <path d="M0 151 Q170 120 360 146 V210 H0Z" fill="#a9c680" />
+              <circle cx="310" cy="37" r="19" fill="#ffe1a0" />
+              <path d="M51 159 L54 80" stroke="#916d4a" stroke-width="14" />
+              <g fill="#63957a">
+                <circle cx="51" cy="66" r="33" />
+                <circle cx="27" cy="87" r="26" />
+                <circle cx="78" cy="87" r="27" />
+              </g>
+              <path
+                d="M90 70 Q180 50 283 160"
+                stroke="#668d7f"
+                stroke-width="2"
+                stroke-dasharray="5 6"
+                fill="none"
+              />
+              <g transform="translate(171 90) scale(0.45)">
+                <path
+                  d="M0 0 C35 -56 111 -67 142 -33 C117 -7 48 8 0 0Z"
+                  fill="url(#wing2)"
+                  stroke="#bf915c"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M6 -2 Q68 -31 130 -34 M35 -15 l12 -24 M61 -23 l17 -24 M85 -29 l19 -21"
+                  stroke="#b08049"
+                  opacity=".5"
+                  fill="none"
+                />
+                <ellipse
+                  cx="0"
+                  cy="1"
+                  rx="17"
+                  ry="12"
+                  transform="rotate(-25)"
+                  fill="url(#nut2)"
+                />
+              </g>
+              <path d="M272 178 V154" stroke="#588250" stroke-width="4" />
+              <g fill="#70a064">
+                <ellipse
+                  cx="263"
+                  cy="154"
+                  rx="11"
+                  ry="5"
+                  transform="rotate(30 263 154)"
+                />
+                <ellipse
+                  cx="281"
+                  cy="148"
+                  rx="11"
+                  ry="5"
+                  transform="rotate(-30 281 148)"
+                />
+              </g>
+            </svg>
+            <div class="explain-copy">
+              <h3>More time for wind to carry it</h3>
+              <p>
+                A slower fall gives wind more time to move a seed away from its
+                parent. Landing in open ground can mean more light and less
+                competition for water and space.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section>
+        <h2>Why do some seeds have wings?</h2>
+        <p>
+          Trees do not choose to grow wings on their seeds. Over many
+          generations, inherited variations that helped seeds spread and grow
+          could be passed on through the trees that survived and reproduced.
+          Wings are one way seeds travel; other plants use animals, water or
+          different shapes to spread their seeds.
+        </p>
+      </section>
+      <section>
+        <h2>What we saw in the video</h2>
+        <p>
+          The original seed-drop video inspired this game. These are rough
+          observations from that recording, rather than measurements of the
+          game.
+        </p>
+        <div class="facts">
+          <div class="fact">
+            <b>About 4.7 seconds</b
+            ><span>From release to landing in the recorded drop.</span>
+          </div>
+          <div class="fact">
+            <b>About 2.5 metres</b
+            ><span>Estimated release height, from a raised hand.</span>
+          </div>
+          <div class="fact">
+            <b>A spinning wing</b
+            ><span>The wing became a blur as the seed drifted down.</span>
+          </div>
+        </div>
+        <p class="note">
+          Height and sideways distance were estimated. The video does not give a
+          reliable spin count. This game is a simplified exploration of the
+          behaviour.
+        </p>
+      </section>
+      <section>
+        <h2>Things to try</h2>
+        <ul>
+          <li>
+            Keep the weight and breeze the same. Does a larger wing change where
+            the seed lands?
+          </li>
+          <li>
+            Keep the wing the same. Compare a light seed with a heavy one.
+          </li>
+          <li>
+            Set the breeze to zero, then increase it. What changes about the
+            flight?
+          </li>
+          <li>
+            Use autoplay to compare pairs, then slow the action to 0.1× to watch
+            the spin.
+          </li>
+          <li>
+            Make a paper helicopter with folded blades and a paperclip. Drop it
+            safely from the same height each time and compare your designs.
+          </li>
+        </ul>
+      </section>
+    </main>
+    <script type="module" src="./src/game.js"></script>
+  </body>
+</html>

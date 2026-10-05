@@ -1,0 +1,19 @@
+{
+  "name": "wonder-why-kit",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "check": "node --check helicopter-seeds/src/game.js && node --test",
+    "serve": "python3 -m http.server 8000 --directory dist",
+    "format": "prettier --write site/*.html site/*.css site/*.js helicopter-seeds/index.html helicopter-seeds/styles.css \"helicopter-seeds/src/*.js\" \"scripts/*.mjs\" \"tests/*.js\" \"*.md\" \"docs/*.md\" helicopter-seeds/*.md worlds.json package.json \".github/workflows/*.yml\"",
+    "format:check": "prettier --check site/*.html site/*.css site/*.js helicopter-seeds/index.html helicopter-seeds/styles.css \"helicopter-seeds/src/*.js\" \"scripts/*.mjs\" \"tests/*.js\" \"*.md\" \"docs/*.md\" helicopter-seeds/*.md worlds.json package.json \".github/workflows/*.yml\""
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}
